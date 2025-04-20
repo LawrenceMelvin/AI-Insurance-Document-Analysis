@@ -5,7 +5,7 @@ An AI model that can analysis the insurance docuemnt provided by users.
 ## The Analysis Contains
 1. Pros and Cons of the Insurance
 2. Coverage details
-3. Hospittilization Coverage
+3. Hospitalization Coverage
 4. Price Consideration
 
 ## Analyser

@@ -1,0 +1,10 @@
+pandas
+nltk
+spacy
+transformers
+pypdf
+pytesseract
+Pillow
+spacy
+torch
+cryptography>=3.1

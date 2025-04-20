@@ -36,16 +36,23 @@ class InsuranceDocumentAnalyzer:
         self.money_pattern = r'\$\d+(?:,\d+)*(?:\.\d+)?|\d+(?:,\d+)*(?:\.\d+)?\s?(?:dollars|USD)'
         self.percentage_pattern = r'\d+(?:\.\d+)?%|\d+(?:\.\d+)?\spercent'
 
-    def extract_text_from_pdf(self, pdf_path):
+    def extract_text_from_pdf(self, pdf_path, password=None):
         """Extract text content from a PDF file"""
         text = ""
         try:
-            reader = PdfReader(pdf_path)
+            reader = PdfReader(pdf_path, password=password)
             for page in reader.pages:
                 text += page.extract_text() + "\n"
             return text
         except Exception as e:
-            print(f"Error extracting text from PDF: {e}")
+            if "encryption" in str(e).lower() or "password" in str(e).lower():
+                print(f"This PDF appears to be encrypted/password-protected: {e}")
+                if password is None:
+                    pwd = input("Enter PDF password (press Enter if none): ")
+                    if pwd:
+                        return self.extract_text_from_pdf(pdf_path, password=pwd)
+            else:
+                print(f"Error extracting text from PDF: {e}")
             return text
 
     def extract_text_from_image(self, image_path):
@@ -58,11 +65,27 @@ class InsuranceDocumentAnalyzer:
             print(f"Error extracting text from image: {e}")
             return ""
 
+    # Update the extract_text method in insurance_analyzer.py
     def extract_text(self, file_path):
         """Extract text from different file types"""
         _, file_extension = os.path.splitext(file_path)
 
-        if file_extension.lower() in ['.pdf']:
+        # If no extension is provided, try to determine file type or default to PDF
+        if file_extension == '':
+            print("No file extension detected, attempting to process as PDF...")
+            try:
+                return self.extract_text_from_pdf(file_path)
+            except Exception as e:
+                print(f"Failed to process as PDF: {e}")
+                print("Trying as plain text...")
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as file:
+                        return file.read()
+                except Exception as e:
+                    print(f"Failed to process as text: {e}")
+                    return ""
+
+        elif file_extension.lower() in ['.pdf']:
             return self.extract_text_from_pdf(file_path)
         elif file_extension.lower() in ['.png', '.jpg', '.jpeg', '.tiff', '.bmp']:
             return self.extract_text_from_image(file_path)
@@ -218,8 +241,34 @@ class InsuranceDocumentAnalyzer:
         text = self.extract_text(file_path)
 
         if not text:
-            return {"error": "Could not extract text from the document"}
-
+            print("ERROR: No text could be extracted from the document.")
+            # Return a valid but empty result structure to avoid KeyError
+            return {
+                'summary': {
+                    'document_summary': {
+                        'pros': ["No text extracted from document"],
+                        'cons': ["No text extracted from document"],
+                        'hidden_details': ["No text extracted from document"],
+                        'key_exclusions': [],
+                        'key_limitations': [],
+                        'important_requirements': [],
+                        'critical_deadlines': [],
+                        'significant_fees': [],
+                        'coverage_highlights': []
+                    }
+                },
+                'detailed_analysis': {
+                    'findings': {k: [] for k in self.key_terms.keys()},
+                    'monetary_values': [],
+                    'percentages': [],
+                    'dates': []
+                },
+                'pros_cons_analysis': {
+                    'pros': [],
+                    'cons': [],
+                    'hidden_details': []
+                }
+            }
         # Analyze the document text
         analysis_results = self.analyze_document(text)
 
