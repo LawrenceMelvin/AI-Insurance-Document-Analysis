@@ -188,7 +188,7 @@ class InsuranceDocumentAnalyzer:
             is_pro = any(
                 term in sentence.lower() for term in ['benefit', 'coverage', 'included', 'advantage', 'free', 'bonus'])
             is_con = any(term in sentence.lower() for term in
-                         ['exclusion', 'not covered', 'limitation', 'restrict', 'charge', 'fee'])
+                         ['exclusion', 'not covered', 'limitation', 'restrict', 'charge', 'fee','co-payment'])
             is_hidden = any(
                 term in sentence.lower() for term in ['fine print', 'conditions apply', 'subject to', 'restrictions'])
 

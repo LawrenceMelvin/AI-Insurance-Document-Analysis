@@ -8,3 +8,4 @@ Pillow
 spacy
 torch
 cryptography>=3.1
+pdfplumber
