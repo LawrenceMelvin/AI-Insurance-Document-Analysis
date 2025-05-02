@@ -14,14 +14,14 @@ def extract_columns(pdf_path, output_path):
 
             # Combine the text from both columns
             if left_text:
-                text += left_text + "\n"
+                text += left_text.lower() + "\n"
             if right_text:
-                text += right_text + "\n"
+                text += right_text.lower() + "\n"
 
     # Save the extracted text to a file
     with open(output_path, "w", encoding="utf-8") as output_file:
         output_file.write(text)
 
 # Example usage
-extract_columns("C:\\Users\\Lawrence Melvin\\Downloads\\Care_Heart.pdf",
-                "C:\\Users\\Lawrence Melvin\\Downloads\\output.txt")
+extract_columns("C:\\Users\\Lawrence Melvin\\Downloads\\HDFC_Ergo_Optima_Secure_Policy_Wording_0c72f5369e.pdf",
+                "C:\\Users\\Lawrence Melvin\\Downloads\\hdfc_extracted_output.txt")
